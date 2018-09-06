@@ -9,6 +9,7 @@ use lazycell::LazyCell;
 use core::{Feature, Package, PackageId, Target, TargetKind};
 use util::{self, join_paths, process, CargoResult, Config, ProcessBuilder};
 use super::BuildContext;
+use util::process_builder::elevated_process;
 
 pub struct Doctest {
     /// The package being doctested.
@@ -178,6 +179,23 @@ impl<'cfg> Compilation<'cfg> {
             builder
         } else {
             process(cmd)
+        };
+        self.fill_env(builder, pkg, false)
+    }
+
+    /// See `process`.
+    pub fn elevated_target_process<T: AsRef<OsStr>>(
+        &self,
+        cmd: T,
+        pkg: &Package,
+    ) -> CargoResult<ProcessBuilder> {
+        let builder = if let Some((ref runner, ref args)) = *self.target_runner()? {
+            let mut builder = elevated_process(runner);
+            builder.args(args);
+            builder.arg(cmd);
+            builder
+        } else {
+            elevated_process(cmd)
         };
         self.fill_env(builder, pkg, false)
     }

@@ -26,6 +26,8 @@ pub struct ProcessBuilder {
     ///
     /// [jobserver_docs]: https://docs.rs/jobserver/0.1.6/jobserver/
     jobserver: Option<Client>,
+    /// Whether the process should have elevated privileges.
+    elevated: bool,
 }
 
 impl fmt::Display for ProcessBuilder {
@@ -322,5 +324,18 @@ pub fn process<T: AsRef<OsStr>>(cmd: T) -> ProcessBuilder {
         cwd: None,
         env: HashMap::new(),
         jobserver: None,
+        elevated: false,
+    }
+}
+
+/// A helper function to create a `ProcessBuilder` with elevated privileges.
+pub fn elevated_process<T: AsRef<OsStr>>(cmd: T) -> ProcessBuilder {
+    ProcessBuilder {
+        program: OsString::from("/usr/bin/sudo"),
+        args: vec![cmd.as_ref().to_os_string()],
+        cwd: None,
+        env: HashMap::new(),
+        jobserver: None,
+        elevated: true,
     }
 }

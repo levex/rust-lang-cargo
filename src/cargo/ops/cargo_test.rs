@@ -8,6 +8,7 @@ use core::Workspace;
 
 pub struct TestOptions<'a> {
     pub compile_opts: ops::CompileOptions<'a>,
+    pub elevated: bool,
     pub no_run: bool,
     pub no_fail_fast: bool,
     pub only_doc: bool,
@@ -100,7 +101,13 @@ fn run_unit_tests(
             Some(path) => path,
             None => &**exe,
         };
-        let mut cmd = compilation.target_process(exe, pkg)?;
+
+        let mut cmd = if options.elevated {
+	    compilation.elevated_target_process(exe, pkg)?
+	} else {
+	    compilation.target_process(exe, pkg)?
+	};
+
         cmd.args(test_args);
         config
             .shell()

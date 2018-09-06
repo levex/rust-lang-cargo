@@ -32,6 +32,7 @@ pub fn cli() -> App {
         .arg(opt("doc", "Test only this library's documentation"))
         .arg(opt("no-run", "Compile, but don't run tests"))
         .arg(opt("no-fail-fast", "Run all tests regardless of failure"))
+        .arg(opt("elevated", "Run tests with elevated permissions (DANGER)"))
         .arg_package_spec(
             "Package to run tests for",
             "Test all packages in the workspace",
@@ -112,6 +113,7 @@ pub fn exec(config: &mut Config, args: &ArgMatches) -> CliResult {
     let ops = ops::TestOptions {
         no_run: args.is_present("no-run"),
         no_fail_fast: args.is_present("no-fail-fast"),
+        elevated: args.is_present("elevated"),
         only_doc: doc,
         compile_opts,
     };

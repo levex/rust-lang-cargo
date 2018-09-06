@@ -78,6 +78,7 @@ pub fn exec(config: &mut Config, args: &ArgMatches) -> CliResult {
     let ops = TestOptions {
         no_run: args.is_present("no-run"),
         no_fail_fast: args.is_present("no-fail-fast"),
+	elevated: false,
         only_doc: false,
         compile_opts,
     };
